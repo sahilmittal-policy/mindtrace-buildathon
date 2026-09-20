@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <title>Word Fill | MindTrace</title>
+    <style>
+      :root {
+        --ink: #33291F;
+        --muted: #66594B;
+        --paper: #FCF8F1;
+        --surface: #F6EFE4;
+        --input: #FCF8F1;
+        --sage: #E3E9D5;
+        --sage-deep: #4B6A45;
+        --lilac: #E9E0EC;
+        --lilac-deep: #6A5580;
+        --clay: #E3D8C6;
+        --clay-deep: #A2523A;
+        --gold: #E2B872;
+        --line: #E3D8C6;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font:
+          20px/1.5 Georgia,
+          serif;
+      }
+      main {
+        width: min(900px, calc(100% - 30px));
+        margin: auto;
+        padding: 28px 0;
+      }
+      .top {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        align-items: start;
+      }
+      h1 {
+        margin: 0;
+        font-size: 2rem;
+        line-height: 1.1;
+      }
+      p {
+        color: var(--muted);
+      }
+      .pill {
+        background: var(--lilac);
+        border: 1px solid #c9badf;
+        border-radius: 999px;
+        padding: 8px 14px;
+        white-space: nowrap;
+      }
+      .progress {
+        height: 12px;
+        background: #edf1ed;
+        border-radius: 99px;
+        overflow: hidden;
+        margin: 24px 0;
+      }
+      .progress span {
+        display: block;
+        height: 100%;
+        background: #7ca889;
+        transition: width 0.3s;
+      }
+      .passage {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 34px 30px;
+        margin: 28px 0;
+        font-size: 1.45rem;
+        line-height: 1.7;
+        box-shadow: 0 8px 24px #1c2b2710;
+      }
+      .blank {
+        display: inline-block;
+        border-bottom: 3px solid #719d7c;
+        min-width: 118px;
+        color: #719d7c;
+      }
+      .answer {
+        display: flex;
+        gap: 12px;
+      }
+      .answer input {
+        flex: 1;
+        min-width: 0;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 15px;
+        font: inherit;
+        background: var(--input);
+      }
+      .answer button,
+      .result button {
+        min-height: 58px;
+        padding: 12px 23px;
+        border: 1px solid #789987;
+        border-radius: 14px;
+        background: var(--sage-deep);
+        color: #FCF8F1;
+        font:
+          700 1rem Georgia,
+          serif;
+        cursor: pointer;
+      }
+      .answer input:focus-visible,
+      button:focus-visible {
+        outline: 3px solid #26758a;
+        outline-offset: 3px;
+      }
+      .feedback {
+        min-height: 35px;
+        font-weight: bold;
+      }
+      .good {
+        color: #39704a;
+      }
+      .try {
+        color: #9b5544;
+      }
+      .result {
+        text-align: center;
+        background: var(--sage);
+        border-radius: 18px;
+        padding: 28px;
+      }
+      .hidden {
+        display: none;
+      }
+      .dashboard {
+        margin-top: 24px;
+        text-align: left;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 18px;
+        overflow-x: auto;
+      }
+      .dashboard h3 {
+        margin: 0 0 14px;
+        font-size: 1.35rem;
+      }
+      .dashboard table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+      }
+      .dashboard th,
+      .dashboard td {
+        border-bottom: 1px solid var(--line);
+        padding: 12px 10px;
+        vertical-align: top;
+      }
+      .dashboard th {
+        color: var(--muted);
+        font-weight: 700;
+      }
+      .badge {
+        display: inline-block;
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-weight: 700;
+        font-size: 0.85rem;
+      }
+      .badge.good {
+        background: #E3E9D5;
+        color: #4B6A45;
+      }
+      .badge.try {
+        background: #E3D8C6;
+        color: #A2523A;
+      }
+      body.dark {
+        --ink: #F6EFE4;
+        --muted: #E3D8C6;
+        --paper: #33291F;
+        --surface: #4B6A45;
+        --input: #66594B;
+        --sage: #4B6A45;
+        --sage-deep: #9DB08F;
+        --lilac: #6A5580;
+        --lilac-deep: #E9E0EC;
+        --clay: #66594B;
+        --clay-deep: #E2B872;
+        --line: #66594B;
+      }
+      body.dark .passage,
+      body.dark .dashboard {
+        background: var(--surface);
+        box-shadow: 0 8px 24px #0003;
+      }
+      body.dark .answer input {
+        background: var(--input);
+        color: var(--ink);
+      }
+      body.dark .answer button,
+      body.dark .result button {
+        background: #E3E9D5;
+        border-color: #E3E9D5;
+        color: #33291F;
+      }
+      @media (max-width: 600px) {
+        body {
+          font-size: 18px;
+        }
+        .top {
+          display: block;
+        }
+        .pill {
+          display: inline-block;
+          margin-top: 10px;
+        }
+        .passage {
+          padding: 25px 18px;
+          font-size: 1.2rem;
+        }
+        .answer {
+          display: block;
+        }
+        .answer button {
+          width: 100%;
+          margin-top: 10px;
+        }
+        .dashboard table {
+          font-size: 0.85rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="top">
+        <div>
+          <h1>Word Fill</h1>
+          <p>Complete the everyday sentence with the word that feels right.</p>
+        </div>
+        <div class="pill" id="roundLabel">Round 1 of 10</div>
+      </div>
+
+      <div class="progress"><span id="bar" style="width: 10%"></span></div>
+
+      <section id="game">
+        <div class="passage" id="passage"></div>
+        <form class="answer" id="form">
+          <input
+            id="input"
+            autocomplete="off"
+            aria-label="Your answer"
+            placeholder="Type one word"
+          />
+          <button>Check answer</button>
+        </form>
+        <div class="feedback" id="feedback" aria-live="polite"></div>
+      </section>
+
+      <section class="result hidden" id="result">
+        <h2>Word Fill complete</h2>
+        <p id="resultText"></p>
+        <div class="dashboard" id="dashboard"></div>
+        <button id="continue">Choose next game</button>
+      </section>
+    </main>
+
+    <script>
+      document.body.classList.toggle(
+        "dark",
+        new URLSearchParams(location.search).get("theme") === "dark",
+      );
+
+      const items = [
+        [
+          "Before leaving, she checked the front door was _____.",
+          ["locked", "closed", "shut", "secure"],
+        ],
+        [
+          "He put the milk back in the ____ after making tea.",
+          ["fridge", "refrigerator"],
+        ],
+        [
+          "The rain stopped, so we opened the ____ to let in fresh air.",
+          ["window"],
+        ],
+        [
+          "Please put the clean plates in the kitchen ____.",
+          ["cupboard", "cabinet"],
+        ],
+        ["She wrote the appointment on the wall ____.", ["calendar"]],
+        [
+          "He tied his shoe because the ____ had come loose.",
+          ["lace", "laces"],
+        ],
+        [
+          "We took the leftovers out of the ____ at lunchtime.",
+          ["fridge", "refrigerator"],
+        ],
+        ["The dog waited by the ____ for its walk.", ["door"]],
+        [
+          "She turned the ____ down because the room was too warm.",
+          ["heat", "heating", "thermostat"],
+        ],
+        ["He placed the book beside his ____ before going to sleep.", ["bed"]],
+        [
+          "After the phone rang, she looked at the caller ____.",
+          ["id", "display", "screen"],
+        ],
+        ["They dried the dishes with a clean ____.", ["towel", "tea towel"]],
+        [
+          "The bus was late, so he checked the time on his ____.",
+          ["watch", "phone"],
+        ],
+        ["She added a little salt to the ____.", ["soup", "stew"]],
+        ["He put the groceries in a reusable ____.", ["bag"]],
+        ["Before dinner, she washed her ____.", ["hands"]],
+        ["The letter was waiting on the ____.", ["mat", "doormat", "floor"]],
+        ["He turned off the light before leaving the ____.", ["room"]],
+        ["She used a sharp ____ to open the package.", ["knife"]],
+        ["The coffee was too hot, so he let it ____.", ["cool"]],
+        [
+          "They hung their coats on the ____ by the door.",
+          ["hooks", "hook", "rack"],
+        ],
+        ["She put the flowers in a glass ____.", ["vase"]],
+        [
+          "He checked the weather before choosing his ____.",
+          ["jacket", "coat", "clothes"],
+        ],
+        [
+          "The baby was asleep, so everyone spoke ____.",
+          ["quietly", "softly", "quiet"],
+        ],
+        [
+          "She kept her keys in the small bowl by the ____.",
+          ["door", "entrance"],
+        ],
+        ["He wiped the table with a damp ____.", ["cloth", "rag", "towel"]],
+        [
+          "They needed a torch because the ____ had gone out.",
+          ["light", "lights", "electricity"],
+        ],
+        ["She saved the document and closed the ____.", ["computer", "laptop"]],
+        [
+          "The bread was in the ____ beside the toaster.",
+          ["drawer", "cabinet", "cupboard"],
+        ],
+        [
+          "He put a bookmark in the book to remember where he had ____.",
+          ["stopped", "left", "finished"],
+        ],
+      ];
+
+      let order = [],
+        index = 0,
+        correct = 0,
+        mistakes = 0,
+        skipped = 0,
+        seconds = [],
+        started = Date.now(),
+        locked = false,
+        responses = [];
+
+      function normal(s) {
+        return s
+          .toLowerCase()
+          .replace(/[^\w\s-]/g, "")
+          .replace(/\s+/g, " ")
+          .trim();
+      }
+
+      function draw() {
+        if (index >= 10) return finish();
+        locked = false;
+        started = Date.now();
+        const item = items[order[index]];
+        document.getElementById("roundLabel").textContent =
+          `Round ${index + 1} of 10`;
+        document.getElementById("bar").style.width = `${(index + 1) * 10}%`;
+        document.getElementById("passage").innerHTML = item[0].replace(
+          "_____",
+          '<span class="blank">_____</span>',
+        );
+        document.getElementById("input").value = "";
+        document.getElementById("feedback").textContent = "";
+        document.getElementById("feedback").className = "feedback";
+        document.getElementById("input").focus();
+      }
+
+      function advance() {
+        seconds.push((Date.now() - started) / 1000);
+        index++;
+        setTimeout(draw, 400);
+      }
+
+      document.getElementById("form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (locked) return;
+
+        const rawValue = document.getElementById("input").value;
+        const value = normal(rawValue);
+        const item = items[order[index]];
+        const answers = item[1].map(normal);
+
+        if (!value) {
+          document.getElementById("feedback").className = "feedback try";
+          document.getElementById("feedback").textContent =
+            "Type an answer first.";
+          return;
+        }
+
+        locked = true;
+        const matched = answers.includes(value);
+        const suggested = item[1][0];
+
+        responses.push({
+          sentence: item[0],
+          userAnswer: rawValue.trim(),
+          suggestedAnswer: suggested,
+          acceptedAnswers: item[1],
+          matched,
+        });
+
+        if (matched) {
+          correct++;
+          document.getElementById("feedback").className = "feedback good";
+          document.getElementById("feedback").textContent =
+            "That fits. Nice work.";
+        } else {
+          mistakes++;
+          document.getElementById("feedback").className = "feedback try";
+          document.getElementById("feedback").textContent =
+            "Good try. Here comes the next one.";
+        }
+
+        advance();
+      });
+
+      function escapeHtml(text) {
+        return String(text).replace(
+          /[&<>"']/g,
+          (match) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#039;",
+            })[match],
+        );
+      }
+
+      function renderDashboard() {
+        const rows = responses
+          .map((item, i) => {
+            const sentence = item.sentence.replace(
+              "_____",
+              `<strong>${escapeHtml(item.userAnswer)}</strong>`,
+            );
+            const accepted = item.acceptedAnswers.map(escapeHtml).join(", ");
+            const status = item.matched
+              ? '<span class="badge good">Match</span>'
+              : '<span class="badge try">Different</span>';
+
+            return `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${sentence}</td>
+        <td>${escapeHtml(item.userAnswer)}</td>
+        <td>${escapeHtml(item.suggestedAnswer)}</td>
+        <td>${accepted}</td>
+        <td>${status}</td>
+      </tr>
+    `;
+          })
+          .join("");
+
+        document.getElementById("dashboard").innerHTML = `
+    <h3>Answer dashboard</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Sentence with your word</th>
+          <th>Your word</th>
+          <th>Suggested word</th>
+          <th>Accepted answers</th>
+          <th>Result</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+      }
+
+      function finish() {
+        document.getElementById("game").classList.add("hidden");
+        document.querySelector(".progress").classList.add("hidden");
+        document.getElementById("result").classList.remove("hidden");
+
+        const avg =
+          seconds.reduce((a, b) => a + b, 0) / Math.max(1, seconds.length);
+
+        document.getElementById("resultText").textContent =
+          correct >= 8
+            ? "Strong accuracy today. That's worth a little celebration."
+            : "Some answers clicked and some didn't, which is normal. You finished the round, and showing up counts.";
+
+        renderDashboard();
+
+        window.parent.postMessage(
+          {
+            source: "mindtrace-game",
+            game: "words",
+            payload: {
+              rounds: 10,
+              correct,
+              mistakes,
+              skipped,
+              avgSeconds: avg,
+              responses,
+            },
+          },
+          "*",
+        );
+      }
+
+      document.getElementById("continue").addEventListener("click", () => {
+        window.parent.postMessage(
+          { source: "mindtrace-game", game: "done" },
+          "*",
+        );
+      });
+
+      order = Array.from({ length: items.length }, (_, i) => i).sort(
+        () => Math.random() - 0.5,
+      );
+      draw();
+    </script>
+  </body>
+</html>
+```

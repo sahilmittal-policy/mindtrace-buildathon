@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/mindtrace-mark.svg" />
+    <link rel="stylesheet" href="/styles.css" />
+    <title>MindTrace — Your daily check-in</title>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="brand-bar">
+        <a class="brand" href="#" id="brandHome" aria-label="MindTrace home"
+          ><span class="brand-mark"
+            ><img src="/mindtrace-mark.svg" alt="" /></span
+          ><span class="brand-name">indTrace</span></a
+        >
+        <div class="header-actions">
+          <button class="header-link" id="showSignIn">Sign in</button>
+          <button
+            class="header-link settings-icon"
+            id="settingsLink"
+            hidden
+            type="button"
+            aria-label="Settings"
+            title="Settings"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z" />
+              <path
+                d="m19.4 15 .1.1a1.8 1.8 0 0 1-2.5 2.5l-.1-.1a1.8 1.8 0 0 0-3 .8v.2a1.8 1.8 0 0 1-3.6 0v-.2a1.8 1.8 0 0 0-3-.8l-.1.1a1.8 1.8 0 1 1-2.5-2.5l.1-.1a1.8 1.8 0 0 0-.8-3h-.2a1.8 1.8 0 0 1 0-3h.2a1.8 1.8 0 0 0 .8-3l-.1-.1a1.8 1.8 0 1 1 2.5-2.5l.1.1a1.8 1.8 0 0 0 3-.8v-.2a1.8 1.8 0 0 1 3.6 0v.2a1.8 1.8 0 0 0 3 .8l.1-.1a1.8 1.8 0 1 1 2.5 2.5l-.1.1a1.8 1.8 0 0 0 .8 3h.2a1.8 1.8 0 0 1 0 3h-.2a1.8 1.8 0 0 0-.8 3Z"
+              />
+            </svg>
+          </button>
+          <button class="header-link" id="signOutLink" hidden>Sign out</button>
+        </div>
+      </header>
+
+      <nav class="main-nav" id="mainNav" aria-label="Main navigation">
+        <button class="nav-button" data-nav="checkin">
+          <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z"
+            />
+            <path d="m8 14 2.2 2.2L16 11" />
+          </svg>
+          <span class="nav-copy">Today<small>Daily check-in</small></span>
+        </button>
+        <button class="nav-button" data-nav="hub">
+          <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M8.5 8h7a5.5 5.5 0 0 1 5.2 7.3l-1 3a2.5 2.5 0 0 1-4.2.9L13.7 17h-3.4l-1.8 2.2a2.5 2.5 0 0 1-4.2-.9l-1-3A5.5 5.5 0 0 1 8.5 8Z"
+            />
+            <path d="M8 11v4M6 13h4M16.5 12h.01M18.5 14h.01" />
+          </svg>
+          <span class="nav-copy">Games<small>Play or review</small></span>
+        </button>
+        <button class="nav-button" data-nav="dashboard">
+          <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
+          </svg>
+          <span class="nav-copy">Dashboard<small>Your patterns</small></span>
+        </button>
+        <button class="nav-button" data-nav="badges">
+          <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="9" r="6" />
+            <path d="m8.5 14-1 7 4.5-2.5 4.5 2.5-1-7M9.5 9l1.6 1.6L15 7" />
+          </svg>
+          <span class="nav-copy"
+            >Achievements<small>Your collection</small></span
+          >
+        </button>
+        <button class="nav-button" data-nav="friends">
+          <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="9" cy="8" r="3" />
+            <circle cx="17" cy="9" r="2.5" />
+            <path d="M3 20c.4-4 2.4-6 6-6s5.6 2 6 6M14 15c3.8-.8 6.2.9 7 4" />
+          </svg>
+          <span class="nav-copy">Friends<small>Share your streak</small></span>
+        </button>
+      </nav>
+
+      <main>
+        <!-- ============ LANDING ============ -->
+        <section class="screen active" id="screen-landing">
+          <div class="landing-hero">
+            <div>
+              <span class="eyebrow">A daily check-in for your own rhythm</span>
+              <h1>
+                Your mind has a rhythm.<br />MindTrace helps you notice it.
+              </h1>
+              <p class="lede">
+                Build a personal baseline through quick daily exercises, then
+                track the small shifts in memory, focus, and language that are
+                easy to miss in the moment.
+              </p>
+              <div class="hero-actions">
+                <button class="button" id="landingStart">
+                  Create your account
+                </button>
+                <button class="button secondary" id="landingSignIn">
+                  I already have one
+                </button>
+              </div>
+              <p class="hero-note">
+                About five minutes a day. Free while we are building it.
+              </p>
+              <div class="hero-facts">
+                <div class="hero-fact">
+                  <strong>5 min</strong><span>a day</span>
+                </div>
+                <div class="hero-fact">
+                  <strong>3 games</strong><span>one check-in</span>
+                </div>
+                <div class="hero-fact">
+                  <strong>14 days</strong><span>to your own range</span>
+                </div>
+              </div>
+            </div>
+            <div class="landing-art">
+              <span class="ring"></span><span class="ring inner"></span>
+              <img
+                src="/mindtrace-mark.svg"
+                alt="The MindTrace M monogram, shaped like an elephant with ear-like arches and a curved trunk"
+              />
+            </div>
+          </div>
+
+          <div class="landing-steps">
+            <div class="landing-step">
+              <span class="num">01</span>
+              <h3>A one-minute check-in</h3>
+              <p>
+                How you slept, how you feel, how much is on your plate. There
+                are no right answers—this is the context that explains an
+                ordinary off day.
+              </p>
+            </div>
+            <div class="landing-step">
+              <span class="num">02</span>
+              <h3>Three short games</h3>
+              <p>
+                Symbol Match, What's in a Symbol?, and Word Fill. One is enough,
+                and all three make a fuller picture.
+              </p>
+            </div>
+            <div class="landing-step">
+              <span class="num">03</span>
+              <h3>Your own usual range</h3>
+              <p>
+                The first fourteen check-ins simply learn your everyday rhythm.
+                After that, each day is measured against you—never against
+                anyone else.
+              </p>
+            </div>
+          </div>
+
+          <footer>
+            MindTrace is not a diagnostic tool and cannot detect any medical
+            condition. If you are worried about your memory or thinking, please
+            speak to a doctor.
+          </footer>
+        </section>
+
+        <!-- ============ SIGN IN / SIGN UP ============ -->
+        <section class="screen" id="screen-auth">
+          <div class="auth-wrap">
+            <span class="eyebrow">Your account</span>
+            <h2 id="authHeading">Welcome back.</h2>
+            <p id="authSub">Sign in to pick up where you left off.</p>
+
+            <div class="auth-tabs" style="margin-top: 28px">
+              <button
+                class="auth-tab active"
+                data-authtab="signin"
+                type="button"
+              >
+                Sign in
+              </button>
+              <button class="auth-tab" data-authtab="signup" type="button">
+                Create account
+              </button>
+            </div>
+
+            <p class="auth-error" id="authError" hidden></p>
+
+            <form id="signinForm">
+              <div class="field">
+                <label for="signinEmail">Email address</label
+                ><input
+                  id="signinEmail"
+                  type="email"
+                  autocomplete="email"
+                  required
+                />
+              </div>
+              <div class="field">
+                <label for="signinPassword">Password</label
+                ><input
+                  id="signinPassword"
+                  type="password"
+                  autocomplete="current-password"
+                  required
+                />
+              </div>
+              <button class="button" type="submit" style="width: 100%">
+                Sign in
+              </button>
+            </form>
+
+            <form id="signupForm" hidden>
+              <div class="field">
+                <label for="signupName">First name</label
+                ><input
+                  id="signupName"
+                  type="text"
+                  maxlength="30"
+                  autocomplete="given-name"
+                />
+              </div>
+              <div class="field">
+                <label for="signupEmail">Email address</label
+                ><input id="signupEmail" type="email" autocomplete="email" />
+              </div>
+              <div class="field">
+                <label for="signupPassword"
+                  >Password
+                  <span class="muted tiny">(at least 6 characters)</span></label
+                ><input
+                  id="signupPassword"
+                  type="password"
+                  autocomplete="new-password"
+                />
+              </div>
+              <div class="field">
+                <label for="signupYear"
+                  >Year of birth
+                  <span class="muted tiny">(optional)</span></label
+                ><input
+                  id="signupYear"
+                  type="number"
+                  min="1900"
+                  max="2020"
+                  inputmode="numeric"
+                />
+              </div>
+              <button class="button" type="submit" style="width: 100%">
+                Create account
+              </button>
+            </form>
+
+            <p class="auth-foot">
+              Your check-ins are saved to your account so you can sign in from
+              any device. We never share your results with anyone.
+            </p>
+          </div>
+        </section>
+
+        <!-- ============ CHECK-IN ============ -->
+        <section class="screen" id="screen-checkin">
+          <div class="screen-heading">
+            <div>
+              <span class="eyebrow">Today's check-in</span>
+              <h2>How has your day started?</h2>
+              <p>
+                There are no right answers. A little context helps you
+                understand your own results.
+              </p>
+            </div>
+            <button class="back-link" id="checkinBack">Back</button>
+          </div>
+          <div class="motivation">
+            <div class="motivation-mark">1</div>
+            <div>
+              <strong>First, a quick check-in.</strong>
+              <p>
+                Take your time. Most people finish this part in about a minute.
+              </p>
+            </div>
+          </div>
+          <form id="checkinForm" class="panel">
+            <div class="field">
+              <label for="sleepHours"><span class="field-icon sleep-icon" aria-hidden="true">☾</span>How many hours did you sleep last night?</label>
+              <div class="slider-row">
+                <input
+                  id="sleepHours"
+                  type="range"
+                  min="0"
+                  max="12"
+                  step=".5"
+                  value="7"
+                /><output class="range-value" id="sleepValue">7 hours</output>
+              </div>
+            </div>
+            <div class="field">
+              <label><span class="field-icon sleep-icon" aria-hidden="true">☾</span>How would you describe your sleep quality?</label>
+              <div class="choice-grid" data-choice="sleepQuality">
+                <button type="button" class="choice" data-value="1">
+                  Very poorly</button
+                ><button type="button" class="choice" data-value="2">
+                  Poorly</button
+                ><button type="button" class="choice selected" data-value="3">
+                  All right</button
+                ><button type="button" class="choice" data-value="4">
+                  Well</button
+                ><button type="button" class="choice" data-value="5">
+                  Very well
+                </button>
+              </div>
+            </div>
+            <div class="field">
+              <label><span class="field-icon mood-icon" aria-hidden="true">☺</span>How is your mood?</label>
+              <div class="choice-grid" data-choice="mood">
+                <button type="button" class="choice" data-value="1">
+                  Very low</button
+                ><button type="button" class="choice" data-value="2">Low</button
+                ><button type="button" class="choice selected" data-value="3">
+                  All right</button
+                ><button type="button" class="choice" data-value="4">
+                  Good</button
+                ><button type="button" class="choice" data-value="5">
+                  Very good
+                </button>
+              </div>
+            </div>
+            <div class="field">
+              <label><span class="field-icon stress-icon" aria-hidden="true">≈</span>How much stress are you carrying today?</label>
+              <div class="choice-grid" data-choice="stress">
+                <button type="button" class="choice selected" data-value="1">
+                  None</button
+                ><button type="button" class="choice" data-value="2">
+                  A little</button
+                ><button type="button" class="choice" data-value="3">
+                  Some</button
+                ><button type="button" class="choice" data-value="4">
+                  A lot</button
+                ><button type="button" class="choice" data-value="5">
+                  A great deal
+                </button>
+              </div>
+            </div>
+            <div class="field">
+              <label><span class="field-icon energy-icon" aria-hidden="true">ϟ</span>How is your energy?</label>
+              <div class="choice-grid" data-choice="energy">
+                <button type="button" class="choice" data-value="1">
+                  Very low</button
+                ><button type="button" class="choice" data-value="2">Low</button
+                ><button type="button" class="choice selected" data-value="3">
+                  All right</button
+                ><button type="button" class="choice" data-value="4">
+                  Good</button
+                ><button type="button" class="choice" data-value="5">
+                  Very good
+                </button>
+              </div>
+            </div>
+            <div class="field">
+              <label><span class="field-icon caffeine-icon" aria-hidden="true">☕</span>Have you had caffeine today?</label>
+              <div
+                class="choice-grid"
+                style="grid-template-columns: repeat(2, minmax(100px, 220px))"
+                data-choice="caffeine"
+              >
+                <button type="button" class="choice" data-value="yes">
+                  Yes</button
+                ><button type="button" class="choice selected" data-value="no">
+                  No
+                </button>
+              </div>
+            </div>
+            <div class="field">
+              <label for="notes"
+                ><span class="field-icon notes-icon" aria-hidden="true">✎</span>Anything else you want to remember?
+                <span class="muted tiny">(optional)</span></label
+              ><textarea
+                id="notes"
+                maxlength="300"
+                placeholder="For example: busy morning, new medication, visitors..."
+              ></textarea>
+            </div>
+            <button class="button" type="submit">Start the games</button>
+          </form>
+        </section>
+
+        <!-- ============ GAME HUB ============ -->
+        <section class="screen" id="screen-hub">
+          <div class="screen-heading">
+            <div>
+              <span class="eyebrow">Today's games</span>
+              <h2>Take them in any order.</h2>
+              <p>
+                Each game adds a different kind of signal to your personal
+                picture. You can finish after any one game.
+              </p>
+            </div>
+            <button class="back-link" id="hubBack">Back</button>
+          </div>
+          <div class="motivation">
+            <div class="motivation-mark mascot">
+              <img src="/mindtrace-mark.svg" alt="" />
+            </div>
+            <div>
+              <strong id="gameMotivationTitle">Now for the fun part.</strong>
+              <p id="gameMotivationText">
+                Pick whichever game sounds good. One is enough, and all three
+                make a fuller picture.
+              </p>
+            </div>
+          </div>
+          <div class="checkin-bar">
+            <span id="hubCount">0 of 3 done</span
+            ><span class="checkin-dot" id="hubDot1"></span
+            ><span class="checkin-dot" id="hubDot2"></span
+            ><span class="checkin-dot" id="hubDot3"></span>
+          </div>
+          <div class="hub-grid">
+            <button class="game-tile" data-game="symbolMatch">
+              <span class="game-number">01</span>
+              <h3>Symbol Match</h3>
+              <p>Find the one shared symbol across changing pairs of cards.</p>
+              <div class="done-label" hidden>Done</div>
+            </button>
+            <button class="game-tile" data-game="memory">
+              <span class="game-number">02</span>
+              <h3>What's in a Symbol?</h3>
+              <p>Remember which symbols you saw a moment ago.</p>
+              <div class="done-label" hidden>Done</div>
+            </button>
+            <button class="game-tile" data-game="words">
+              <span class="game-number">03</span>
+              <h3>Word Fill</h3>
+              <p>Complete ordinary sentences with the word that fits.</p>
+              <div class="done-label" hidden>Done</div>
+            </button>
+          </div>
+          <div class="hub-footer">
+            <p id="hubHint">Play at least one game to see your result.</p>
+            <div class="hub-actions">
+              <button class="button secondary small" id="nextGameButton" hidden>
+                Play next game</button
+              ><button class="button lilac" id="finishSession" disabled>
+                Finish and see results
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ DASHBOARD ============ -->
+        <section class="screen" id="screen-dashboard">
+          <div class="screen-heading">
+            <div>
+              <span class="eyebrow">Your MindTrace</span>
+              <h2 id="dashGreeting">Good to see you.</h2>
+              <p id="dashDate"></p>
+            </div>
+            <div class="dashboard-actions">
+              <button class="button" id="startToday">
+                Start today's check-in
+              </button>
+            </div>
+          </div>
+          <div class="dashboard-filter" aria-label="Dashboard filters">
+            <div class="filter-group">
+              <label class="filter-select-label" for="dashboardGame"
+                >Game view</label
+              ><select class="dashboard-select" id="dashboardGame">
+                <option value="all">All games</option>
+                <option value="symbolMatch">Symbol Match</option>
+                <option value="memory">What's in a Symbol?</option>
+                <option value="words">Word Fill</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <span class="filter-label">Time frame</span>
+              <div class="filter-buttons">
+                <button
+                  class="filter-button active"
+                  data-range="day"
+                  aria-pressed="true"
+                >
+                  1 day ago</button
+                ><button
+                  class="filter-button"
+                  data-range="week"
+                  aria-pressed="false"
+                >
+                  1 week ago</button
+                ><button
+                  class="filter-button"
+                  data-range="month"
+                  aria-pressed="false"
+                >
+                  1 month ago</button
+                ><button
+                  class="filter-button"
+                  data-range="lifetime"
+                  aria-pressed="false"
+                >
+                  Lifetime
+                </button>
+              </div>
+            </div>
+          </div>
+          <div id="dashboardContent"></div>
+        </section>
+
+        <!-- ============ BADGES ============ -->
+        <section class="screen" id="screen-badges">
+          <div class="screen-heading">
+            <div>
+              <h2>Show up everyday to earn badges!</h2>
+            </div>
+            <button class="back-link" id="badgesBack">Back</button>
+          </div>
+          <div id="badgesContent"></div>
+        </section>
+
+        <!-- ============ FRIENDS ============ -->
+        <section class="screen" id="screen-friends">
+          <div class="screen-heading">
+            <div>
+              <span class="eyebrow">Your circle</span>
+              <h2>Share your streak, not your score.</h2>
+              <p>
+                Friends can see how many days in a row you have checked in—never
+                how you performed. Showing up is the part worth sharing.
+              </p>
+            </div>
+            <button class="back-link" id="friendsBack">Back</button>
+          </div>
+
+          <div class="section-title friends-list-heading">
+            <h3>Friends</h3>
+            <span class="muted tiny">Longest streak first</span>
+          </div>
+          <div id="friendsList"></div>
+          <p class="tiny" style="margin-top: 22px">
+            MindTrace never shares cognitive results between people. Ranking
+            anyone by performance would change how hard they try, and that would
+            spoil the measurement for everyone.
+          </p>
+
+          <div class="invite-card friend-invite">
+            <div>
+              <span class="eyebrow">Your invite code</span>
+              <div class="invite-code" id="inviteCode">------</div>
+              <p class="tiny" style="margin-top: 8px">
+                Give this to someone you would like to keep company with.
+              </p>
+            </div>
+            <button class="button secondary small" id="copyInvite">
+              Copy code
+            </button>
+          </div>
+
+          <form id="addFriendForm" class="panel" style="margin-bottom: 34px">
+            <h3>Add a friend</h3>
+            <p class="tiny">
+              Enter the six-character code they shared with you. You will both
+              see each other's streaks.
+            </p>
+            <p
+              class="auth-error"
+              id="friendError"
+              hidden
+              style="margin-top: 18px"
+            ></p>
+            <div class="form-row" style="margin-top: 18px; align-items: end">
+              <div class="field" style="margin-bottom: 0">
+                <label for="friendCode">Invite code</label
+                ><input
+                  id="friendCode"
+                  type="text"
+                  maxlength="6"
+                  autocapitalize="characters"
+                  spellcheck="false"
+                  placeholder="ABC123"
+                />
+              </div>
+              <button class="button" type="submit">Add friend</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- ============ SETTINGS ============ -->
+        <section class="screen" id="screen-settings">
+          <div class="screen-heading">
+            <div>
+              <span class="eyebrow">Your preferences</span>
+              <h2>Settings</h2>
+              <p>
+                Choose a comfortable appearance and download a copy of your
+                information.
+              </p>
+            </div>
+            <button class="back-link" id="settingsBack">Back</button>
+          </div>
+          <div class="settings-grid">
+            <section class="setting-card">
+              <h3>Appearance</h3>
+              <p>
+                The light theme follows the local day, warming and deepening
+                after 5 PM. Soft dark stays available whenever you prefer it.
+              </p>
+              <div class="theme-choices">
+                <button class="theme-choice" data-theme="light">
+                  Light
+                  <div class="theme-sample"><i></i><i></i><i></i></div>
+                </button>
+                <button class="theme-choice" data-theme="dark">
+                  Soft dark
+                  <div class="theme-sample"><i></i><i></i><i></i></div>
+                </button>
+              </div>
+            </section>
+            <section class="setting-card">
+              <h3>Export your information</h3>
+              <p>
+                Download this profile's check-ins as a CSV file that can be
+                opened in a spreadsheet.
+              </p>
+              <button
+                class="button secondary"
+                id="exportData"
+                style="margin-top: 20px"
+              >
+                Export check-in data
+              </button>
+              <p class="tiny" style="margin-top: 14px">
+                Your check-ins are saved to your account. Exporting gives you
+                your own copy to keep.
+              </p>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" aria-live="polite"></div>
+    <div class="game-modal" id="gameModal">
+      <button
+        class="modal-close"
+        id="closeGameModal"
+        aria-label="Close game"
+        title="Close game"
+      >
+        ×</button
+      ><iframe
+        class="game-frame"
+        id="gameFrame"
+        title="MindTrace game"
+      ></iframe>
+    </div>
+
+    <script src="/engine.js"></script>
+    <script src="/app.js"></script>
+  </body>
+</html>

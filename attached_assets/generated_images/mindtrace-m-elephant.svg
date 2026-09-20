@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">MindTrace elephant M</title>
+  <desc id="desc">A minimal letter M whose outer arches form elephant ears and whose center continues into a curved trunk.</desc>
+  <path
+    d="M19 43c4-11 17-13 24-4l8 11-14 21c-7 10-23 5-23-8V48c0-2 2-4 5-5Z"
+    fill="#E3D8C6"
+    opacity=".95"
+  />
+  <path
+    d="M109 43c-4-11-17-13-24-4l-8 11 14 21c7 10 23 5 23-8V48c0-2-2-4-5-5Z"
+    fill="#E3D8C6"
+    opacity=".95"
+  />
+  <path
+    d="M14 91V42c0-17 20-23 31-9l19 27 19-27c11-14 31-8 31 9v49"
+    fill="none"
+    stroke="#33291F"
+    stroke-width="11"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <path
+    d="M64 60v38c0 8 8 12 15 7"
+    fill="none"
+    stroke="#4B6A45"
+    stroke-width="10"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>

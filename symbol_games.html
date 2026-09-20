@@ -1,0 +1,761 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+    />
+    <title>Symbol Match | MindTrace</title>
+    <style>
+      :root {
+        --ink: #33291F;
+        --muted: #66594B;
+        --paper: #FCF8F1;
+        --surface: #F6EFE4;
+        --input: #FCF8F1;
+        --sage: #E3E9D5;
+        --sage-deep: #4B6A45;
+        --lilac: #E9E0EC;
+        --lilac-deep: #6A5580;
+        --clay: #E3D8C6;
+        --clay-deep: #A2523A;
+        --gold: #E2B872;
+        --blue: #E3E9D5;
+        --line: #E3D8C6;
+        --neutral-bg: #F6EFE4;
+        --neutral-icon: #66594B;
+        --bluegray-icon: #6A5580;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--paper);
+        color: var(--ink);
+        font:
+          20px/1.45 Georgia,
+          serif;
+      }
+
+      main {
+        width: min(980px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 26px 0 44px;
+      }
+
+      .top {
+        display: flex;
+        justify-content: space-between;
+        gap: 18px;
+        align-items: start;
+        margin-bottom: 18px;
+      }
+
+      h1 {
+        margin: 0;
+        font:
+          700 2rem/1.05 Georgia,
+          serif;
+      }
+
+      p {
+        margin: 0.35rem 0;
+        color: var(--muted);
+      }
+
+      .pill {
+        background: var(--lilac);
+        border: 1px solid #c9badf;
+        border-radius: 999px;
+        padding: 8px 14px;
+        white-space: nowrap;
+      }
+
+      .progress {
+        height: 12px;
+        background: #edf1ed;
+        border-radius: 99px;
+        overflow: hidden;
+        margin: 22px 0;
+      }
+
+      .progress span {
+        display: block;
+        height: 100%;
+        background: #7ca889;
+        transition: width 0.3s;
+      }
+
+      .levelbar {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin: 0 0 20px;
+      }
+
+      .levelbar button {
+        background: #fffdf7;
+        color: var(--ink);
+        border-color: var(--line);
+        min-height: 48px;
+        padding: 10px 18px;
+      }
+
+      .levelbar button.active {
+        background: #f0eadf;
+        border-color: #b8ab97;
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+      }
+
+      .cards.memory {
+        grid-template-columns: 1fr;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .card {
+        min-height: 310px;
+        padding: 20px;
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        background: var(--surface);
+        box-shadow: 0 8px 24px #1c2b2710;
+      }
+
+      .card h2 {
+        text-align: center;
+        font-size: 1.2rem;
+        margin: 0.1rem 0 1rem;
+      }
+
+      .symbols {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        height: 230px;
+        align-items: center;
+      }
+
+      .symbol {
+        width: 100%;
+        aspect-ratio: 1;
+        min-height: 48px;
+        border: 1px solid transparent;
+        border-radius: 13px;
+        background: transparent;
+        cursor: pointer;
+        transition:
+          transform 0.15s,
+          background 0.15s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .symbol:hover,
+      .symbol:focus-visible {
+        background: var(--blue);
+        transform: scale(1.05);
+        outline: 3px solid #78aab7;
+      }
+
+      .symbol.correct,
+      .symbol.selected {
+        background: var(--sage);
+        outline: 3px solid #5e956d;
+      }
+
+      .symbol.wrong {
+        background: #f4d7ce;
+        outline: 3px solid #bf735d;
+      }
+
+      .icon-blob {
+        width: 64px;
+        height: 64px;
+        border-radius: 14px;
+        background: var(--tint);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .icon-blob i {
+        color: var(--icon);
+        font-size: 2.2rem;
+        line-height: 1;
+      }
+
+      .actions {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 22px;
+      }
+
+      button {
+        min-height: 58px;
+        padding: 12px 22px;
+        border: 1px solid var(--sage-deep);
+        border-radius: 14px;
+        background: var(--sage-deep);
+        color: #FCF8F1;
+        font:
+          700 1rem Georgia,
+          serif;
+        cursor: pointer;
+      }
+
+      button.secondary {
+        background: var(--input);
+        color: var(--ink);
+        border-color: var(--line);
+      }
+
+      button:focus-visible {
+        outline: 3px solid #26758a;
+        outline-offset: 3px;
+      }
+
+      button:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+
+      .result {
+        text-align: center;
+        background: var(--sage);
+        border-radius: 18px;
+        padding: 28px;
+      }
+
+      body.dark {
+        --ink: #F6EFE4;
+        --muted: #E3D8C6;
+        --paper: #33291F;
+        --surface: #4B6A45;
+        --input: #66594B;
+        --sage: #4B6A45;
+        --sage-deep: #9DB08F;
+        --lilac: #6A5580;
+        --lilac-deep: #E9E0EC;
+        --clay: #66594B;
+        --clay-deep: #E2B872;
+        --blue: #4B6A45;
+        --line: #66594B;
+        --neutral-bg: #66594B;
+        --neutral-icon: #F6EFE4;
+        --bluegray-icon: #E9E0EC;
+      }
+
+      body.dark button:not(.secondary) {
+        background: #E3E9D5;
+        border-color: #E3E9D5;
+        color: #33291F;
+      }
+
+      .result h2 {
+        margin-top: 0;
+        font-size: 1.7rem;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      @media (max-width: 650px) {
+        main {
+          width: min(100% - 22px, 500px);
+          padding-top: 18px;
+        }
+
+        .top {
+          display: block;
+        }
+
+        .pill {
+          display: inline-block;
+          margin-top: 12px;
+        }
+
+        .cards {
+          gap: 8px;
+        }
+
+        .card {
+          padding: 12px;
+          min-height: 280px;
+        }
+
+        .symbols {
+          gap: 4px;
+          height: 210px;
+        }
+
+        .symbol {
+          min-height: 42px;
+        }
+
+        .icon-blob {
+          width: 52px;
+          height: 52px;
+        }
+
+        .icon-blob i {
+          font-size: 1.85rem;
+        }
+
+        body {
+          font-size: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="top">
+        <div>
+          <h1>Symbol Match</h1>
+          <p>Find the one symbol the two cards share.</p>
+        </div>
+        <div class="pill" id="roundLabel">Round 1 of 10</div>
+      </div>
+
+      <div class="progress"><span id="bar" style="width: 10%"></span></div>
+
+      <div class="levelbar" id="levelbar">
+        <button id="level1" class="active" type="button">Level 1</button>
+        <button id="level2" type="button">Level 2</button>
+        <button id="level3" type="button">Level 3</button>
+      </div>
+
+      <section class="cards" id="board"></section>
+
+      <div class="actions">
+        <button class="secondary" id="skip">Skip this pair</button>
+      </div>
+
+      <section class="result hidden" id="result">
+        <h2>Symbol Match complete</h2>
+        <p id="resultText"></p>
+        <button id="continue">Choose next game</button>
+      </section>
+    </main>
+
+    <script src="engine.js"></script>
+    <script>
+      const SYMBOLS = [
+        ["bug", "bi-bug-fill", "#bf5b4b", "#fdebe7"],
+        ["headphones", "bi-headphones", "#7862a8", "#f2eefb"],
+        ["water", "bi-droplet-fill", "#4d8cb6", "#eaf6fd"],
+        ["snow", "bi-snow2", "#6aa7c8", "#edf8fd"],
+        ["orange", "bi-circle-fill", "#d9782d", "#fff0df"],
+        ["dog", "bi-emoji-smile-fill", "#9a6a45", "#f8efe6"],
+        ["pineapple", "bi-brightness-high-fill", "#c69a2d", "#fff7dc"],
+        ["camera", "bi-camera-fill", "#55616f", "#eef1f4"],
+        ["globe", "bi-globe-americas", "#3e8975", "#eaf7f3"],
+        ["leaf", "bi-tree-fill", "#4f8a4b", "#eef8ed"],
+        ["gear", "bi-gear-fill", "#65707c", "#eef1f4"],
+        ["dot", "bi-record-circle-fill", "#4b83cf", "#edf4ff"],
+        ["star", "bi-star-fill", "#c79a2e", "#fff7dc"],
+        ["pentagon", "bi-pentagon-fill", "#8465bd", "#f4efff"],
+        ["airplane", "bi-airplane-fill", "#4d78a4", "#edf4fb"],
+        ["telephone", "bi-telephone-fill", "#557b5b", "#edf8ef"],
+        ["coffee", "bi-cup-hot-fill", "#8a6343", "#f7efe8"],
+        ["umbrella", "bi-umbrella-fill", "#8c5b99", "#f7eff9"],
+        ["music", "bi-music-note-beamed", "#b65378", "#fff0f5"],
+        ["moon", "bi-moon-fill", "#687287", "#f1f3f8"],
+        ["heart", "bi-heart-fill", "#c95468", "#fff0f3"],
+        ["spider", "bi-bug", "#4b4b4b", "#f0f0f0"],
+        ["cat", "bi-emoji-smile", "#a16a45", "#fff0e6"],
+        ["bird", "bi-twitter", "#4e93aa", "#eaf8fb"],
+        ["backpack", "bi-backpack-fill", "#9b6040", "#fff0e7"],
+        ["football", "bi-dribbble", "#9a5a34", "#fff0e6"],
+        ["car", "bi-car-front-fill", "#547fc2", "#eef4ff"],
+        ["stop sign", "bi-octagon-fill", "#bf4f45", "#fff0ee"],
+        ["pen", "bi-pen-fill", "#53606c", "#f1f3f5"],
+        ["mirror", "bi-aspect-ratio-fill", "#717986", "#f2f4f6"],
+        ["apple", "bi-apple", "#b84b42", "#fff0ee"],
+        ["banana", "bi-emoji-laughing-fill", "#bc9129", "#fff8dd"],
+        ["book", "bi-book-half", "#5576ad", "#eef3ff"],
+        ["key", "bi-key-fill", "#a77a2c", "#fff4df"],
+        ["clock", "bi-clock-fill", "#65707c", "#f1f3f5"],
+        ["bell", "bi-bell-fill", "#c69227", "#fff7dc"],
+        ["house", "bi-house-door-fill", "#72775f", "#f3f5ec"],
+        ["flower", "bi-flower1", "#bd5b86", "#fff0f6"],
+        ["anchor", "bi-compass-fill", "#537894", "#eef6fb"],
+        ["magnet", "bi-magnet-fill", "#b65454", "#fff0f0"],
+        ["paint", "bi-palette-fill", "#8760b5", "#f5f0ff"],
+        ["rocket", "bi-rocket-takeoff-fill", "#b75a3d", "#fff0ea"],
+        ["lamp", "bi-lightbulb-fill", "#aa842a", "#fff8df"],
+        ["diamond", "bi-gem", "#4e8799", "#edf8fb"],
+        ["balloon", "bi-balloon-fill", "#c85f86", "#fff0f6"],
+        ["crown", "bi-award-fill", "#b08b2f", "#fff7dc"],
+        ["gift", "bi-gift-fill", "#b85168", "#fff0f3"],
+        ["fish", "bi-water", "#3e8392", "#eaf8fb"],
+        ["shoe", "bi-record-circle-fill", "#84664f", "#f7f1ed"],
+        ["tree", "bi-tree-fill", "#4f8a4b", "#eef8ed"],
+        ["rainbow", "bi-rainbow", "#8a67bd", "#f5f0ff"],
+        ["fire", "bi-fire", "#c45f31", "#fff0e7"],
+        ["cloud", "bi-cloud-fill", "#6f98b3", "#eef8ff"],
+        ["chair", "bi-menu-button-wide-fill", "#7c6956", "#f7f2ed"],
+        ["bus", "bi-bus-front-fill", "#bd8627", "#fff4df"],
+        ["scissors", "bi-scissors", "#566170", "#f2f4f6"],
+        ["lock", "bi-lock-fill", "#65707c", "#eef1f4"],
+      ];
+
+      const symbols = SYMBOLS.map((item, index) => ({
+        name: item[0],
+        icon: item[1],
+        color: item[2],
+        tint: item[3],
+        id: index,
+      }));
+
+      const mode =
+        new URLSearchParams(location.search).get("game") === "memory"
+          ? "memory"
+          : "symbolMatch";
+
+      const neutralBg = "#eef1f4";
+      const neutralIcon = "#65707c";
+      const blueGrayIcon = "#537894";
+
+      let matchLevel = 1;
+      let round = 0,
+        firstTry = 0,
+        wrongTaps = 0,
+        roundWrong = 0,
+        attempted = 0,
+        skipped = 0,
+        seconds = [],
+        startedAt = Date.now(),
+        locked = false;
+
+      function symbolStyle(symbol) {
+        if (mode === "memory" || matchLevel === 1) {
+          return { icon: symbol.color, tint: symbol.tint };
+        }
+
+        if (matchLevel === 2) {
+          return { icon: symbol.color, tint: neutralBg };
+        }
+
+        const icon = round % 2 === 0 ? neutralIcon : blueGrayIcon;
+        return { icon, tint: neutralBg };
+      }
+
+      function projectiveCards() {
+        const q = 7,
+          cards = [];
+        for (let group = 0; group <= q; group++)
+          cards.push([
+            0,
+            ...Array.from({ length: q }, (_, j) => 1 + q * group + j),
+          ]);
+        for (let a = 0; a < q; a++)
+          for (let b = 0; b < q; b++) {
+            const card = [a + 1];
+            for (let group = 1; group <= q; group++)
+              card.push(1 + q * group + ((a * group + b) % q));
+            cards.push(card);
+          }
+        return cards;
+      }
+
+      const deck = projectiveCards();
+
+      function makeRound() {
+        const leftIndex = Math.floor(Math.random() * deck.length);
+        let rightIndex = Math.floor(Math.random() * deck.length);
+        while (rightIndex === leftIndex)
+          rightIndex = Math.floor(Math.random() * deck.length);
+        const left = deck[leftIndex].map((id) => symbols[id]),
+          right = deck[rightIndex].map((id) => symbols[id]);
+        const shared = left.find((item) =>
+          right.some((other) => other.id === item.id),
+        );
+        return {
+          shared,
+          left: left.sort(() => Math.random() - 0.5),
+          right: right.sort(() => Math.random() - 0.5),
+        };
+      }
+
+      function symbolButton(symbol) {
+        const style = symbolStyle(symbol);
+        const btn = document.createElement("button");
+        btn.className = "symbol";
+        btn.style.setProperty("--icon", style.icon);
+        btn.style.setProperty("--tint", style.tint);
+        btn.innerHTML = `<span class="icon-blob"><i class="bi ${symbol.icon}"></i></span>`;
+        btn.setAttribute("aria-label", symbol.name);
+        if (mode === "symbolMatch")
+          btn.addEventListener("click", () => pick(btn, symbol));
+        return btn;
+      }
+
+      function draw() {
+        if (round >= 10) return finish();
+        locked = false;
+        roundWrong = 0;
+        startedAt = Date.now();
+        document.getElementById("roundLabel").textContent =
+          `Round ${round + 1} of 10`;
+        document.getElementById("bar").style.width = `${(round + 1) * 10}%`;
+        const pair = makeRound(),
+          board = document.getElementById("board");
+        board.innerHTML = "";
+        [
+          ["Card one", pair.left],
+          ["Card two", pair.right],
+        ].forEach(([label, symbols]) => {
+          const card = document.createElement("article");
+          card.className = "card";
+          card.innerHTML = `<h2>${label}</h2><div class="symbols"></div>`;
+          symbols.forEach((symbol) =>
+            card.querySelector(".symbols").appendChild(symbolButton(symbol)),
+          );
+          board.appendChild(card);
+        });
+        document.getElementById("skip").disabled = false;
+        window.currentPair = pair;
+      }
+
+      function same(a, b) {
+        return a.id === b.id;
+      }
+
+      function pick(button, symbol) {
+        if (locked) return;
+        attempted++;
+        if (same(symbol, window.currentPair.shared)) {
+          locked = true;
+          seconds.push((Date.now() - startedAt) / 1000);
+          firstTry += roundWrong === 0 ? 1 : 0;
+          button.classList.add("correct");
+          setTimeout(() => {
+            round++;
+            draw();
+          }, 430);
+        } else {
+          wrongTaps++;
+          roundWrong++;
+          button.classList.add("wrong");
+          setTimeout(() => button.classList.remove("wrong"), 320);
+        }
+      }
+
+      document.getElementById("skip").addEventListener("click", () => {
+        if (!locked) {
+          skipped++;
+          seconds.push((Date.now() - startedAt) / 1000);
+          locked = true;
+          round++;
+          draw();
+        }
+      });
+
+      function finish() {
+        document.getElementById("board").classList.add("hidden");
+        document.querySelector(".progress").classList.add("hidden");
+        document.getElementById("levelbar").classList.add("hidden");
+        document.getElementById("skip").classList.add("hidden");
+        document.getElementById("result").classList.remove("hidden");
+        const avg = seconds.length
+          ? seconds.reduce((a, b) => a + b, 0) / seconds.length
+          : 0;
+        const correct = Math.max(0, 10 - skipped);
+        const accuracy = correct / Math.max(1, correct + wrongTaps);
+        document.getElementById("resultText").textContent =
+          accuracy >= 0.8
+            ? `Strong accuracy today. Your average time was ${avg.toFixed(1)} seconds. That's worth a little celebration.`
+            : `Some parts clicked and some didn't, which is normal. You finished the round in an average of ${avg.toFixed(1)} seconds.`;
+        window.parent.postMessage(
+          {
+            source: "mindtrace-game",
+            game: "symbolMatch",
+            payload: {
+              rounds: 10,
+              correct: Math.max(0, 10 - skipped),
+              incorrect: wrongTaps,
+              firstTry,
+              attempted,
+              wrongTaps,
+              skipped,
+              avgSeconds: avg,
+            },
+          },
+          "*",
+        );
+      }
+
+      document.querySelectorAll("#levelbar button").forEach((button, index) => {
+        button.addEventListener("click", () => {
+          matchLevel = index + 1;
+          document
+            .querySelectorAll("#levelbar button")
+            .forEach((item) => item.classList.remove("active"));
+          button.classList.add("active");
+          draw();
+        });
+      });
+
+      let memoryScores = [],
+        memoryCorrect = 0,
+        memoryIncorrect = 0,
+        memorySet = [],
+        returnSet = [],
+        selected = new Set(),
+        countdownTimer;
+
+      function initMemory() {
+        document.querySelector("h1").textContent = "What's in a Symbol?";
+        document.querySelector(".top p").textContent =
+          "Remember the symbols, then choose the ones that return.";
+        document.getElementById("skip").textContent = "Submit choices";
+        document.getElementById("skip").disabled = true;
+        document.getElementById("levelbar").classList.add("hidden");
+        round = 0;
+        drawMemoryStudy();
+      }
+
+      function drawMemoryStudy() {
+        if (round >= 2) return finishMemory();
+        selected = new Set();
+        const shuffled = symbols.slice().sort(() => Math.random() - 0.5);
+        memorySet = shuffled.slice(0, 8);
+        const returnCount = 3 + Math.floor(Math.random() * 3);
+        returnSet = memorySet
+          .slice()
+          .sort(() => Math.random() - 0.5)
+          .slice(0, returnCount);
+        document.getElementById("roundLabel").textContent =
+          `Round ${round + 1} of 2`;
+        document.getElementById("bar").style.width =
+          `${((round + 1) / 2) * 100}%`;
+        document.getElementById("board").className = "cards memory";
+        renderMemoryCard("Take a good look — 15 seconds", memorySet, false);
+        document.getElementById("skip").disabled = true;
+        let remaining = 15;
+        countdownTimer = setInterval(() => {
+          remaining--;
+          const heading = document.querySelector("#board h2");
+          if (heading)
+            heading.textContent = `Take a good look — ${remaining} ${remaining === 1 ? "second" : "seconds"}`;
+          if (remaining <= 0) {
+            clearInterval(countdownTimer);
+            drawMemoryChoice();
+          }
+        }, 1000);
+      }
+
+      function renderMemoryCard(label, items, selectable) {
+        const board = document.getElementById("board");
+        board.innerHTML = "";
+        const card = document.createElement("article");
+        card.className = "card";
+        card.innerHTML = `<h2>${label}</h2><div class="symbols"></div>`;
+        items.forEach((symbol) => {
+          const button = symbolButton(symbol);
+          if (!selectable) button.disabled = true;
+          else
+            button.addEventListener("click", () => {
+              if (selected.has(symbol.id)) selected.delete(symbol.id);
+              else selected.add(symbol.id);
+              button.classList.toggle("selected", selected.has(symbol.id));
+              document.getElementById("skip").disabled = false;
+            });
+          card.querySelector(".symbols").appendChild(button);
+        });
+        board.appendChild(card);
+      }
+
+      function drawMemoryChoice() {
+        const distractors = symbols
+          .filter((item) => !memorySet.some((old) => old.id === item.id))
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 8 - returnSet.length);
+        renderMemoryCard(
+          "Which symbols returned?",
+          [...returnSet, ...distractors].sort(() => Math.random() - 0.5),
+          true,
+        );
+        document.getElementById("skip").disabled = false;
+      }
+
+      function submitMemory() {
+        const correct = returnSet.filter((item) =>
+          selected.has(item.id),
+        ).length;
+        const falseChoices = [...selected].filter(
+          (id) => !returnSet.some((item) => item.id === id),
+        ).length;
+        memoryCorrect += correct;
+        memoryIncorrect += returnSet.length - correct + falseChoices;
+        memoryScores.push(correct / returnSet.length);
+        round++;
+        drawMemoryStudy();
+      }
+
+      function finishMemory() {
+        document.getElementById("board").classList.add("hidden");
+        document.querySelector(".progress").classList.add("hidden");
+        document.getElementById("skip").classList.add("hidden");
+        document.getElementById("result").classList.remove("hidden");
+        const avgScore =
+          memoryScores.reduce((a, b) => a + b, 0) / memoryScores.length;
+        document.querySelector("#result h2").textContent =
+          "Memory game complete";
+        document.getElementById("resultText").textContent =
+          avgScore >= 0.8
+            ? "Strong accuracy today. That's worth a little celebration."
+            : "Some symbols came back and some didn't, which is normal. You finished the round, and showing up counts.";
+        window.parent.postMessage(
+          {
+            source: "mindtrace-game",
+            game: "memory",
+            payload: {
+              rounds: 2,
+              avgScore,
+              correct: memoryCorrect,
+              incorrect: memoryIncorrect,
+            },
+          },
+          "*",
+        );
+      }
+
+      document
+        .getElementById("continue")
+        .addEventListener("click", () =>
+          window.parent.postMessage(
+            { source: "mindtrace-game", game: "done" },
+            "*",
+          ),
+        );
+
+      if (mode === "memory") {
+        document
+          .getElementById("skip")
+          .replaceWith(document.getElementById("skip").cloneNode(true));
+        document.getElementById("skip").addEventListener("click", submitMemory);
+        initMemory();
+      } else draw();
+    </script>
+  </body>
+</html>
+```

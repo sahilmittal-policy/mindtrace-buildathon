@@ -1,0 +1,37 @@
+# ---------------------------------------------------------------------------
+# The account database. server.py writes data/db.json at runtime, and it holds
+# real email addresses, password salts and hashes, invite codes, and session
+# answers. It must never be committed.
+# ---------------------------------------------------------------------------
+data/
+*.db.json
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Replit / Nix workspace scaffolding
+.replit
+.replitignore
+.config/
+.cache/
+.local/
+.agents/
+.conversation/
+.upm/
+replit.nix
+uv.lock
+
+# Node scaffolding (MindTrace itself uses no Node runtime)
+node_modules/
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
