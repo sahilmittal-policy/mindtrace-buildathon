@@ -103,7 +103,7 @@ contain real email addresses and password hashes.
 
 ## Team
 
-Built at Buildathon (Replit × The Gen Academy), September 2026.
+Built at Buildathon (Replit × The Gen Academy), September 2026. Top 6 finalists. 
 
 Sahil Mittal, Esha Gupta, Kanishka Agarwal, Jade Jaimes-Chavez
 
