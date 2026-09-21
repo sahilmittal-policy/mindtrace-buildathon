@@ -105,8 +105,6 @@ contain real email addresses and password hashes.
 
 Built at Buildathon (Replit × The Gen Academy), September 19
 
-Awarded top 6 out of 75 teams!
-
 Members - Sahil Mittal, Esha Gupta, Kanishka Agarwal, Jade Jaimes-Chavez
 
 ## License
