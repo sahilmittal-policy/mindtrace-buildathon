@@ -335,6 +335,116 @@ function rangeLabel() {
     : dashboardRange === "week" ? "1 week ago"
     : dashboardRange === "month" ? "1 month ago" : "Lifetime";
 }
+
+function analyticsMarkup() {
+  const rows = E.analyticsRows(sessions);
+
+  if (!rows.length) return "";
+
+  const latestIndex = rows.length - 1;
+  const latest = rows[latestIndex];
+  const metricDefinitions = [
+    {
+      key: "responseTime",
+      label: "Symbol Match response time",
+      format: (value) => `${value} seconds`
+    },
+    {
+      key: "symbolMatchAccuracy",
+      label: "Symbol Match accuracy",
+      format: (value) => `${Math.round(value * 100)}%`
+    },
+    {
+      key: "memoryAccuracy",
+      label: "Memory accuracy",
+      format: (value) => `${Math.round(value * 100)}%`
+    },
+    {
+      key: "wordFillAccuracy",
+      label: "Word Fill accuracy",
+      format: (value) => `${Math.round(value * 100)}%`
+    }
+  ];
+
+  const metricCards = metricDefinitions.map((metric) => {
+    const currentValue = latest[metric.key];
+    const baseline = E.personalBaseline(rows, latestIndex, metric.key, 14);
+    const rollingValues = E.rollingAverage(rows, metric.key, 7);
+    const rollingAverage = rollingValues[rollingValues.length - 1];
+    const deviation = E.deviationPercent(currentValue, baseline);
+    const currentText = typeof currentValue === "number"
+      ? metric.format(currentValue)
+      : "No result yet";
+    const rollingText = typeof rollingAverage === "number"
+      ? `7-day average: ${metric.format(rollingAverage)}`
+      : "7-day average: building";
+    const baselineText = baseline && typeof deviation === "number"
+      ? `Baseline: ${metric.format(baseline.mean)} · ${Math.abs(deviation)}% ${deviation > 0 ? "above" : deviation < 0 ? "below" : "at"} baseline`
+      : "14-session baseline: building";
+
+    return `<div class="domain-card"><h3>${metric.label}</h3><div class="domain-score">${currentText}</div><div class="domain-diff">${rollingText}<br />${baselineText}</div></div>`;
+  }).join("");
+
+  const associationText = (result, label) => {
+    if (result.value === null) return `${label}: not enough paired data yet.`;
+    const strength = Math.abs(result.value) >= 0.7
+      ? "strong"
+      : Math.abs(result.value) >= 0.4 ? "moderate" : "weak";
+    const direction = result.value > 0
+      ? "higher values tend to occur with slower response times"
+      : result.value < 0
+        ? "higher values tend to occur with faster response times"
+        : "no clear linear association appears";
+    return `${label}: ${strength} association. ${direction} across ${result.count} sessions (r = ${result.value}).`;
+  };
+
+  const associationCards = [
+    ["sleepHours", "Sleep hours"],
+    ["sleepQuality", "Sleep quality"],
+    ["stress", "Stress"],
+    ["mood", "Mood"],
+    ["energy", "Energy"],
+    ["caffeine", "Caffeine"]
+  ].map(([key, label]) => `<div class="domain-card"><h3>${label} and response time</h3><div class="domain-diff">${associationText(E.correlation(rows, key, "responseTime"), label)}</div></div>`).join("");
+
+  const responseBaseline = E.personalBaseline(rows, latestIndex, "responseTime", 14);
+  const responseDeviation = E.deviationPercent(latest.responseTime, responseBaseline);
+  const headlineText = responseDeviation === null
+    ? "Your personal performance picture is still building."
+    : responseDeviation > 0
+      ? `Your Symbol Match response time is ${Math.abs(responseDeviation)}% slower than your 14-session baseline today.`
+      : responseDeviation < 0
+        ? `Your Symbol Match response time is ${Math.abs(responseDeviation)}% faster than your 14-session baseline today.`
+        : "Your Symbol Match response time matches your personal baseline today.";
+
+  return `
+    <div class="section-title">
+      <h3>What may explain changes?</h3>
+      <span class="muted tiny">Longitudinal analysis</span>
+    </div>
+    <div class="panel soft analytics-panel">
+      <span class="eyebrow">Your performance context</span>
+      <p>${headlineText}</p>
+      <p class="tiny">Baselines use the previous 14 sessions. Rolling averages use the previous 7 calendar days.</p>
+      <p class="tiny">Associations describe patterns in your data, not causes.</p>
+    </div>
+    <div class="section-title">
+      <h3>Performance metrics</h3>
+      <span class="muted tiny">Current value, rolling average, and baseline</span>
+    </div>
+    <div class="domain-grid">
+      ${metricCards}
+    </div>
+    <div class="section-title">
+      <h3>Context associations</h3>
+      <span class="muted tiny">Compared with response time</span>
+    </div>
+    <div class="domain-grid">
+      ${associationCards}
+    </div>
+  `;
+}
+
 function gameMetricSummary(session, key) {
   const metrics = session.games && session.games[key];
   if (!metrics) return null;
@@ -550,6 +660,7 @@ function dashboardMarkup(insight, list, allSessions, b) {
   const config = gameViewConfig();
   const labels = { speed: "Speed", focus: "Focus", memory: "Memory", words: "Words" };
   return `<section class="dashboard-hero ${insight.key}"><span class="eyebrow">${latest ? `${config.label} · ${rangeLabel()}` : "A fresh view"}</span><h2 class="affirmation">${insight.title}</h2><p class="hero-context">${insight.explanation}</p></section>
+    ${analyticsMarkup()}
     <div class="stat-strip">
       <div class="stat"><div class="stat-value"><svg class="stat-icon fire" viewBox="0 0 24 24" aria-hidden="true"><path d="M13.2 2.5c.6 3.8-2.7 4.8-2.2 8.1.2 1.4 1.2 2.2 2.4 2.6-.2-1.8.8-3.2 2.3-4.5 2.5 2.1 4.1 4.6 3.4 7.5-.8 3.4-3.6 5.3-7.1 5.3-4.2 0-7.4-2.7-7.4-6.8 0-3.7 2.4-6.4 5.2-8.9.1 2 .6 3.1 1.4 3.8-.3-3 1.1-4.6 2-7.1Z"/></svg><strong>${E.currentStreak(list)}</strong></div><span>day streak</span></div>
       <div class="stat"><div class="stat-value"><svg class="stat-icon sessions" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z"/><path d="m8 14 2 2 5-5"/></svg><strong>${list.length}</strong></div><span>sessions in view</span></div>
