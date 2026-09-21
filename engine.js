@@ -12,73 +12,6 @@
   };
   const round = (value) => Math.round(value * 10) / 10;
 
-  function accuracyFor(metrics) {
-    if (!metrics) return null;
-    const rounds = Number(metrics.rounds);
-    if (typeof metrics.accuracy === "number") return clamp(metrics.accuracy, 0, 1);
-    if (typeof metrics.avgScore === "number") return clamp(metrics.avgScore, 0, 1);
-    if (typeof metrics.correct === "number" && rounds > 0) return clamp(metrics.correct / rounds, 0, 1);
-    return null;
-  }
-
-  function analyticsRows(sessions) {
-    return sessions.map((session) => ({
-      date: session.date,
-      responseTime: session.games && session.games.symbolMatch
-        ? session.games.symbolMatch.avgSeconds ?? null : null,
-      symbolMatchAccuracy: accuracyFor(session.games && session.games.symbolMatch),
-      memoryAccuracy: accuracyFor(session.games && session.games.memory),
-      wordFillAccuracy: accuracyFor(session.games && session.games.words),
-      sleepHours: session.checkin ? Number(session.checkin.sleepHours) : null,
-      sleepQuality: session.checkin ? Number(session.checkin.sleepQuality) : null,
-      stress: session.checkin ? Number(session.checkin.stress) : null,
-      mood: session.checkin ? Number(session.checkin.mood) : null,
-      energy: session.checkin ? Number(session.checkin.energy) : null,
-      caffeine: session.checkin && typeof session.checkin.caffeine === "boolean"
-        ? (session.checkin.caffeine ? 1 : 0) : null
-    })).map((row) => {
-      Object.keys(row).forEach((key) => {
-        if (key !== "date" && !Number.isFinite(row[key])) row[key] = null;
-      });
-      return row;
-    }).sort((a, b) => String(a.date).localeCompare(String(b.date)));
-  }
-
-  function rollingAverage(rows, metric, days = 7) {
-    return rows.map((row, index) => {
-      const currentDate = new Date(`${row.date}T12:00:00`);
-      const values = rows.slice(0, index + 1).filter((candidate) => {
-        const candidateDate = new Date(`${candidate.date}T12:00:00`);
-        const age = (currentDate - candidateDate) / 86400000;
-        return age >= 0 && age < days && typeof candidate[metric] === "number";
-      }).map((candidate) => candidate[metric]);
-      return values.length ? round(mean(values)) : null;
-    });
-  }
-
-  function personalBaseline(rows, metric, index, window = 14) {
-    const values = rows.slice(Math.max(0, index - window), index)
-      .map((row) => row[metric]).filter((value) => typeof value === "number");
-    if (!values.length) return null;
-    return { mean: round(mean(values)), sd: round(standardDeviation(values)), count: values.length };
-  }
-
-  function deviationPercent(value, baseline) {
-    if (typeof value !== "number" || !baseline || !baseline.mean) return null;
-    return round(((value - baseline.mean) / baseline.mean) * 100);
-  }
-
-  function correlation(rows, xKey, yKey) {
-    const pairs = rows.filter((row) => typeof row[xKey] === "number" && typeof row[yKey] === "number");
-    if (pairs.length < 5) return { value: null, count: pairs.length };
-    const xMean = mean(pairs.map((row) => row[xKey]));
-    const yMean = mean(pairs.map((row) => row[yKey]));
-    const numerator = pairs.reduce((sum, row) => sum + (row[xKey] - xMean) * (row[yKey] - yMean), 0);
-    const xDistance = Math.sqrt(pairs.reduce((sum, row) => sum + (row[xKey] - xMean) ** 2, 0));
-    const yDistance = Math.sqrt(pairs.reduce((sum, row) => sum + (row[yKey] - yMean) ** 2, 0));
-    return { value: xDistance && yDistance ? round(numerator / (xDistance * yDistance)) : null, count: pairs.length };
-  }
-
   function sleepScore(hours, quality) {
     const distance = hours < 7 ? 7 - hours : hours > 8 ? hours - 8 : 0;
     const hoursComponent = clamp(100 - distance * 18, 0, 100);
@@ -334,5 +267,5 @@
     return "Good to have you back. Every check-in adds another point to your picture.";
   }
 
-  return { clamp, mean, standardDeviation, accuracyFor, analyticsRows, rollingAverage, personalBaseline, deviationPercent, correlation, sleepScore, scoreSymbolMatch, scoreMemory, scoreWords, calculateDomains, composite, getBaseline, verdictFor, currentStreak, longestStreak, toDateKey, badgesFor, nextBadge, encouragement, daysSince };
+  return { clamp, mean, standardDeviation, sleepScore, scoreSymbolMatch, scoreMemory, scoreWords, calculateDomains, composite, getBaseline, verdictFor, currentStreak, longestStreak, toDateKey, badgesFor, nextBadge, encouragement, daysSince };
 });
