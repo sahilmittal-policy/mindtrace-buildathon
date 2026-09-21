@@ -103,9 +103,11 @@ contain real email addresses and password hashes.
 
 ## Team
 
-Built at Buildathon (Replit × The Gen Academy), September 2026.
+Built at Buildathon (Replit × The Gen Academy), September 2026. 
 
-Sahil Mittal, Esha Gupta, Kanishka Agarwal, Jade Jaimes-Chavez
+Awarded top 6 out of 75 teams!
+
+Members - Sahil Mittal, Esha Gupta, Kanishka Agarwal, Jade Jaimes-Chavez
 
 ## License
 
